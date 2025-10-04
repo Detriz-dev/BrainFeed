@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import "./App.css";
-import { queryDatabase, getDatabaseInfo } from "./services/notionService";
-import { testConnection } from "./notion-client";
+import { queryDatabase, getDatabaseInfo, testConnection } from "./services/notionService";
 
 function App() {
   const [connected, setConnected] = useState(false);

@@ -1,50 +1,35 @@
-import notion from '../notion-client';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-const DATABASE_ID = import.meta.env.VITE_NOTION_DATABASE_ID;
-
-export interface NotionPage {
-  id: string;
-  properties: any;
-  created_time: string;
-  last_edited_time: string;
-}
-
-// Query database
 export async function queryDatabase() {
   try {
-    const response = await notion.databases.query({
-      database_id: DATABASE_ID,
-    });
-    return response.results;
+    const response = await fetch(`${API_URL}/api/notion/pages`);
+    if (!response.ok) throw new Error('Failed to fetch pages');
+    return await response.json();
   } catch (error) {
     console.error('Error querying database:', error);
     throw error;
   }
 }
 
-// Get database info
 export async function getDatabaseInfo() {
   try {
-    const response = await notion.databases.retrieve({
-      database_id: DATABASE_ID,
-    });
-    return response;
+    const response = await fetch(`${API_URL}/api/notion/database`);
+    if (!response.ok) throw new Error('Failed to fetch database');
+    return await response.json();
   } catch (error) {
     console.error('Error retrieving database:', error);
     throw error;
   }
 }
 
-// Create a new page
-export async function createPage(properties: any) {
+export async function testConnection() {
   try {
-    const response = await notion.pages.create({
-      parent: { database_id: DATABASE_ID },
-      properties: properties,
-    });
-    return response;
+    const response = await fetch(`${API_URL}/api/notion/test`);
+    if (!response.ok) throw new Error('Failed to connect');
+    const data = await response.json();
+    return data.success;
   } catch (error) {
-    console.error('Error creating page:', error);
-    throw error;
+    console.error('Notion connection failed:', error);
+    return false;
   }
 }
