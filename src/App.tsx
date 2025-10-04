@@ -1,13 +1,14 @@
-import { useState, useEffect } from 'react';
-import './App.css';
-import { queryDatabase, getDatabaseInfo } from './services/notionService';
-import { testConnection } from './notion-client';
+import { useState, useEffect } from "react";
+import "./App.css";
+import { queryDatabase, getDatabaseInfo } from "./services/notionService";
+import { testConnection } from "./notion-client";
 
 function App() {
   const [connected, setConnected] = useState(false);
-  const [databaseName, setDatabaseName] = useState('');
+  const [databaseName, setDatabaseName] = useState("");
   const [pages, setPages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function initNotion() {
@@ -19,14 +20,15 @@ function App() {
         if (isConnected) {
           // Get database info
           const dbInfo = await getDatabaseInfo();
-          setDatabaseName(dbInfo.title?.[0]?.plain_text || 'Untitled');
+          setDatabaseName(dbInfo.title?.[0]?.plain_text || "Untitled");
 
           // Query pages
           const results = await queryDatabase();
           setPages(results);
         }
-      } catch (error) {
-        console.error('Failed to initialize Notion:', error);
+      } catch (err) {
+        console.error("Failed to initialize Notion:", err);
+        setError(err instanceof Error ? err.message : "Unknown error");
       } finally {
         setLoading(false);
       }
@@ -39,12 +41,24 @@ function App() {
     return <div>Loading Notion data...</div>;
   }
 
+  if (error) {
+    return (
+      <div>
+        <h1>Error</h1>
+        <p>{error}</p>
+        <p>Check console for more details</p>
+      </div>
+    );
+  }
+
   return (
     <div className="App">
       <h1>Notion Integration Demo</h1>
-      
+
       <div className="status">
-        <p>Connection Status: {connected ? '✅ Connected' : '❌ Not Connected'}</p>
+        <p>
+          Connection Status: {connected ? "✅ Connected" : "❌ Not Connected"}
+        </p>
         {databaseName && <p>Database: {databaseName}</p>}
       </div>
 

@@ -1,4 +1,3 @@
-typescript// src/notion-client.ts
 import { Client } from "@notionhq/client";
 
 const notion = new Client({
